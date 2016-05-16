@@ -43,13 +43,9 @@ function(req, res) {
 
 app.get('/links', 
 function(req, res) {
-  if (util.isLoggedIn()) {
-    Links.reset().fetch().then(function(links) {
-      res.status(200).send(links.models);
-    });
-  } else {
-    res.render('/login');
-  }
+  Links.reset().fetch().then(function(links) {
+    res.status(200).send(links.models);
+  });
 });
 
 app.post('/links', 
@@ -88,10 +84,8 @@ function(req, res) {
 // Write your authentication routes here
 /************************************************************/
 app.get('/login', function(req, res) {
-  console.log('request is:', req.body);
-  res.status(301).send('done!');
+  res.status(301).send('cool');
 });
-
 
 /************************************************************/
 // Handle the wildcard route last - if all other routes fail
