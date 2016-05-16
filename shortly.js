@@ -25,19 +25,31 @@ app.use(express.static(__dirname + '/public'));
 
 app.get('/', 
 function(req, res) {
-  res.render('index');
+  if (util.isLoggedIn()) {
+    res.render('index');
+  } else {
+    res.redirect('/login');
+  }
 });
 
 app.get('/create', 
 function(req, res) {
-  res.render('index');
+  if (util.isLoggedIn()) {
+    res.render('index');
+  } else {
+    res.redirect('/login');
+  }
 });
 
 app.get('/links', 
 function(req, res) {
-  Links.reset().fetch().then(function(links) {
-    res.status(200).send(links.models);
-  });
+  if (util.isLoggedIn()) {
+    Links.reset().fetch().then(function(links) {
+      res.status(200).send(links.models);
+    });
+  } else {
+    res.render('/login');
+  }
 });
 
 app.post('/links', 
@@ -75,7 +87,10 @@ function(req, res) {
 /************************************************************/
 // Write your authentication routes here
 /************************************************************/
-
+app.get('/login', function(req, res) {
+  console.log('request is:', req.body);
+  res.status(301).send('done!');
+});
 
 
 /************************************************************/
