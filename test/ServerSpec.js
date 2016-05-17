@@ -203,8 +203,8 @@ describe('', function() {
           'method': 'GET',
           'uri': 'http://127.0.0.1:4568/links'
         };
-
         requestWithSession(options, function(error, res, body) {
+          console.log(body);
           expect(body).to.include('"title":"Funny pictures of animals, funny dog pictures"');
           expect(body).to.include('"code":"' + link.get('code') + '"');
           done();

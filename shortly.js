@@ -3,7 +3,6 @@ var util = require('./lib/utility');
 var partials = require('express-partials');
 var bodyParser = require('body-parser');
 
-
 var db = require('./app/config');
 var Users = require('./app/collections/users');
 var User = require('./app/models/user');
@@ -12,6 +11,7 @@ var Link = require('./app/models/link');
 var Click = require('./app/models/click');
 
 var app = express();
+var session = require('express-session');
 
 app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
@@ -21,11 +21,20 @@ app.use(bodyParser.json());
 // Parse forms (signup/login)
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(__dirname + '/public'));
+app.use(session({
+  secret: 'shortly',
+  resave: false,
+  saveUninitialized: true
+}));
 
-
+var sess;
 app.get('/', 
 function(req, res) {
-  if (util.isLoggedIn()) {
+
+  sess = req.session;
+  console.log(sess);
+
+  if (util.isLoggedIn(req)) {
     res.render('index');
   } else {
     res.redirect('/login');
@@ -34,7 +43,7 @@ function(req, res) {
 
 app.get('/create', 
 function(req, res) {
-  if (util.isLoggedIn()) {
+  if (util.isLoggedIn(req)) {
     res.render('index');
   } else {
     res.redirect('/login');
@@ -43,9 +52,14 @@ function(req, res) {
 
 app.get('/links', 
 function(req, res) {
-  Links.reset().fetch().then(function(links) {
-    res.status(200).send(links.models);
-  });
+  console.log('inside app.get: ', req.session.body);
+  if (util.isLoggedIn(req, res)) {
+    Links.reset().fetch().then(function(links) {
+      res.status(200).send(links.models);
+    });
+  } else {
+    res.redirect('/login');
+  }
 });
 
 app.post('/links', 
@@ -84,7 +98,31 @@ function(req, res) {
 // Write your authentication routes here
 /************************************************************/
 app.get('/login', function(req, res) {
+  var sess = req.session;
+  //console.log(sess).fetch().then(function() {
+
+  //});
+
   res.status(301).send('cool');
+});
+
+app.post('/links', function(req, res) {
+  
+});
+
+app.get('/signup', function(req, res) {
+  res.render('signup');
+});
+
+app.post('/signup', function(req, res, next) {
+
+  // console.log('called');
+  // if (util.checkUser(req, res)) {
+  //   res.redirect('/login');
+  // } else {
+  //   new User({username: req.body.username, password: req.body.password});
+  //   next();
+  // }
 });
 
 /************************************************************/
